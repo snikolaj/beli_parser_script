@@ -40,7 +40,7 @@ def download_file(url, filename, fileformat):
         file.write(response.content)
 
 # HTML handler
-def handle_html(filename="C:\\Users\\Stefan\\Downloads\\Majin.html"):
+def handle_html(filename):
     FILE_LOCATION = filename
     reqs = open(FILE_LOCATION, "r", encoding="utf8").read()
     soup = BeautifulSoup(reqs, "html.parser")
@@ -87,9 +87,9 @@ def handle_html(filename="C:\\Users\\Stefan\\Downloads\\Majin.html"):
     print(style.WHITE)
 
 root = tk.Tk()
-root.title("HTML Open File Dialog - Stefan Nikolaj")
+root.title("HTML Open File Dialog - Ackfee6086")
 root.resizable(False, False)
-root.geometry("300x150")
+root.geometry("400x200")
 
 
 def select_file():
