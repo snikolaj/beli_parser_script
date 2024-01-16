@@ -36,8 +36,31 @@ def download_file(url, filename, fileformat):
     query_parameters = {"downloadformat": fileformat}
     response = requests.get(url, params=query_parameters)
     filename = re.sub(r'\W+', '', filename)
-    with open(filename + "." + fileformat, mode="wb") as file:
-        file.write(response.content)
+    write_to_file(filename + fileformat, response.content)
+
+def write_to_file(filename, contents):
+    """
+    Writes contents to a file. If the file exists, adds a number to the end of the filename.
+    If the file with the number exists, increments the number until a file by that name does not exist.
+    """
+    # Split the filename into its base and extension
+    base, ext = os.path.splitext(filename)
+
+    # If the file doesn't exist, write to it
+    if not os.path.exists(filename):
+        with open(filename, 'wb') as f:
+            f.write(contents)
+    else:
+        # If the file exists, add a number to the end of the filename
+        i = 1
+        while True:
+            new_filename = f"{base}_{i}{ext}"
+            if not os.path.exists(new_filename):
+                with open(new_filename, 'wb') as f:
+                    f.write(contents)
+                break
+            i += 1
+
 
 # HTML handler
 def handle_html(filename):
@@ -70,26 +93,28 @@ def handle_html(filename):
 
     for ss in substrings:
         print(style.CYAN + "\n\nAll instances of " + ss)
+        text_widget.insert(tk.END, "\n\nAll instances of " + ss + '\n')
+        text_widget.update()
         f = open("URLs of all " + ss + " files.txt", "w")
         counter = 0
         for url in urls:
             if ss in url:
                 counter += 1
-                print(style.GREEN + url)
+                text_widget.insert(tk.END, url + '\n')
+                text_widget.update()
                 f.write(url + os.linesep)
                 download_file(url, url.split("/")[-1].split(".")[0], "." + ss)
         if counter == 0:
             print(style.RED + "No " + ss + " files were found")
+            text_widget.insert(tk.END, "No " + ss + " files were found" + '\n')
+            text_widget.update()
             f.write("No " + ss + " files were found")
-    
 
-
-    print(style.WHITE)
 
 root = tk.Tk()
-root.title("HTML Open File Dialog - Ackfee6086")
+root.title("HTML File Extractor")
 root.resizable(False, False)
-root.geometry("400x200")
+root.geometry("768x256")
 
 
 def select_file():
@@ -103,5 +128,10 @@ def select_file():
 # open button
 open_button = ttk.Button(root, text="Open the File", command=select_file)
 open_button.pack(expand=True)
+
+text_widget = tk.Text(root)
+text_widget.pack()
+
+text_widget.insert(tk.END, "To extract and download all the files embedded in an HTML file, select it with the button above.\n")
 
 root.mainloop()
