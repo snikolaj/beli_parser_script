@@ -61,11 +61,16 @@ def write_to_file(filename, contents):
                 break
             i += 1
 
+def print_tk_and_console(text_to_print):
+    print(text_to_print)
+    text_widget.insert(tk.END, text_to_print + '\n')
+    text_widget.update()
 
 # HTML handler
 def handle_html(filename):
     FILE_LOCATION = filename
     reqs = open(FILE_LOCATION, "r", encoding="utf8").read()
+    print_tk_and_console("Successfully opened file")
     soup = BeautifulSoup(reqs, "html.parser")
     urls = []
     substrings = ["mp3", "jpg", "jpeg", "png", "svg", "fla", "mp4", "gif", "xml", "wav", "json", "webp"]
@@ -92,22 +97,17 @@ def handle_html(filename):
 
 
     for ss in substrings:
-        print(style.CYAN + "\n\nAll instances of " + ss)
-        text_widget.insert(tk.END, "\n\nAll instances of " + ss + '\n')
-        text_widget.update()
+        print_tk_and_console("\n\nAll instances of " + ss)
         f = open("URLs of all " + ss + " files.txt", "w")
         counter = 0
         for url in urls:
             if ss in url:
                 counter += 1
-                text_widget.insert(tk.END, url + '\n')
-                text_widget.update()
+                print_tk_and_console(url)
                 f.write(url + os.linesep)
                 download_file(url, url.split("/")[-1].split(".")[0], "." + ss)
         if counter == 0:
-            print(style.RED + "No " + ss + " files were found")
-            text_widget.insert(tk.END, "No " + ss + " files were found" + '\n')
-            text_widget.update()
+            print_tk_and_console("No " + ss + " files were found")
             f.write("No " + ss + " files were found")
 
 
